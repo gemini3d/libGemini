@@ -1,0 +1,6 @@
+{
+  "gemini3d": {
+    "git": "https://github.com/gemini3d/gemini3d.git",
+    "tag": "main"
+  }
+}
