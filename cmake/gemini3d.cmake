@@ -16,6 +16,7 @@ endif()
 find_package(MPI COMPONENTS C Fortran REQUIRED)
 find_package(HWLOC)
 find_package(HDF5 COMPONENTS Fortran)
+find_package(ZLIB)
 find_package(MUMPS)
 find_package(SCALAPACK)
 find_package(LAPACK)
@@ -62,6 +63,23 @@ set(SCALAPACK_LIBRARIES
 ${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}scalapack${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
 
+set(LAPACK_LIBRARIES
+${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}lapack${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}blas${CMAKE_STATIC_LIBRARY_SUFFIX}
+)
+
+set(HDF5_LIBRARIES)
+if(WIN32)
+  set(hdf5_names hdf5_hl_fortran hdf5_hl_f90cstub hdf5_fortran hdf5_f90cstub hdf5_hl hdf5)
+else()
+  set(hdf5_names hdf5_hl_fortran hdf5_fortran hdf5_hl hdf5)
+endif()
+foreach(_name ${hdf5_names})
+  list(APPEND HDF5_LIBRARIES ${GEMINI_ROOT}/lib/lib${_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
+endforeach()
+
+set(ZLIB_LIBRARIES ${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}z${CMAKE_STATIC_LIBRARY_SUFFIX})
+
 # ExternalProject defined
 set(gemini3d_byproducts
 ${GEMINI_LIBRARIES}
@@ -79,6 +97,18 @@ endif()
 
 if(NOT SCALAPACK_FOUND)
   list(APPEND gemini3d_byproducts ${SCALAPACK_LIBRARIES})
+endif()
+
+if(NOT LAPACK_FOUND)
+  list(APPEND gemini3d_byproducts ${LAPACK_LIBRARIES})
+endif()
+
+if(NOT HDF5_FOUND)
+  list(APPEND gemini3d_byproducts ${HDF5_LIBRARIES})
+endif()
+
+if(NOT ZLIB_FOUND)
+  list(APPEND gemini3d_byproducts ${ZLIB_LIBRARIES})
 endif()
 
 set(gemini3d_args
@@ -118,11 +148,25 @@ if(HDF5_FOUND)
   target_link_libraries(gemini3d::gemini3d INTERFACE HDF5::HDF5)
 endif()
 
+if(ZLIB_FOUND)
+  target_link_libraries(gemini3d::gemini3d INTERFACE ZLIB::ZLIB)
+endif()
+
 if(HWLOC_FOUND)
   # these are distinct (in addition to) our own hwloc_ifc interface.
   target_link_libraries(gemini3d::gemini3d INTERFACE HWLOC::HWLOC)
 endif()
 
+target_link_libraries(gemini3d::gemini3d INTERFACE MPI::MPI_Fortran)
+
+# libdl and libm are needed on some systems for HDF5
+target_link_libraries(gemini3d::gemini3d INTERFACE ${CMAKE_DL_LIBS})
+
+if(UNIX)
+  target_link_libraries(gemini3d::gemini3d INTERFACE m)
+endif(UNIX)
+
+# for Fortran modules
 target_include_directories(gemini3d::gemini3d INTERFACE ${GEMINI_INCLUDE_DIRS})
 
 add_dependencies(gemini3d::gemini3d GEMINI3D)

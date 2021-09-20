@@ -1,4 +1,8 @@
 {
+  "forestclaw": {
+    "git": "https://github.com/ForestClaw/forestclaw.git",
+    "tag": "develop"
+  },
   "gemini3d": {
     "git": "https://github.com/gemini3d/gemini3d.git",
     "tag": "main"

@@ -13,7 +13,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 include(cmake/libraries.cmake)
 include(cmake/compiler_flags.cmake)
 
+# External Projects
 include(cmake/gemini3d.cmake)
+include(cmake/forestclaw.cmake)
 
 # --- Gemini_c.bin
 # This is an example of a C/C++ Gemini3D main program
