@@ -1,5 +1,9 @@
-# consumes Gemini3D as ExternalProject
+# consumes Gemini3D as ExternalProject, providing imported target "gemini3d::gemini3d"
 include(ExternalProject)
+
+# target_link_libraries(... gemini3d::gemini3d)
+# for user programs
+add_library(gemini3d::gemini3d INTERFACE IMPORTED)
 
 if(NOT GEMINI_ROOT)
   if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -9,21 +13,17 @@ if(NOT GEMINI_ROOT)
   endif()
 endif()
 
+find_package(MPI COMPONENTS C Fortran REQUIRED)
+find_package(HWLOC)
+find_package(HDF5 COMPONENTS Fortran)
+find_package(MUMPS)
+find_package(SCALAPACK)
+find_package(LAPACK)
+
 set(GEMINI_LIBRARIES
 ${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gemini3d${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 set(GEMINI_INCLUDE_DIRS ${GEMINI_ROOT}/include)
-
-ExternalProject_Add(GEMINI3D
-GIT_REPOSITORY ${gemini3d_git}
-GIT_TAG ${gemini3d_tag}
-CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${GEMINI_ROOT} -DBUILD_SHARED_LIBS:BOOL=false -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING:BOOL=false
-BUILD_BYPRODUCTS ${GEMINI_LIBRARIES}
-INACTIVITY_TIMEOUT 15
-CONFIGURE_HANDLED_BY_BUILD true)
-
-file(MAKE_DIRECTORY ${GEMINI_INCLUDE_DIRS})
-# avoid generate race condition
 
 # libraries needed by Gemini3D
 set(h5fortran_LIBRARIES
@@ -62,20 +62,66 @@ set(SCALAPACK_LIBRARIES
 ${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}scalapack${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
 
-
-# target_link_libraries(... gemini3d::gemini3d)
-# for user programs
-add_library(gemini3d::gemini3d INTERFACE IMPORTED)
-
-target_link_libraries(gemini3d::gemini3d INTERFACE
-  ${GEMINI_LIBRARIES}
-  ${nc4fortran_LIBRARIES}
-  ${h5fortran_LIBRARIES}
-  ${GLOW_LIBRARIES}
-  ${MSIS_LIBRARIES}
-  ${HWM_LIBRARIES}
-  ${HWLOC_LIBRARIES}
+# ExternalProject defined
+set(gemini3d_byproducts
+${GEMINI_LIBRARIES}
+${nc4fortran_LIBRARIES}
+${h5fortran_LIBRARIES}
+${GLOW_LIBRARIES}
+${MSIS_LIBRARIES}
+${HWM_LIBRARIES}
+${HWLOC_LIBRARIES}
 )
+
+if(NOT MUMPS_FOUND)
+  list(APPEND gemini3d_byproducts ${MUMPS_LIBRARIES})
+endif()
+
+if(NOT SCALAPACK_FOUND)
+  list(APPEND gemini3d_byproducts ${SCALAPACK_LIBRARIES})
+endif()
+
+set(gemini3d_args
+-DCMAKE_INSTALL_PREFIX:PATH=${GEMINI_ROOT}
+-DBUILD_SHARED_LIBS:BOOL=false
+-DCMAKE_BUILD_TYPE=Release
+-DBUILD_TESTING:BOOL=false
+)
+
+ExternalProject_Add(GEMINI3D
+GIT_REPOSITORY ${gemini3d_git}
+GIT_TAG ${gemini3d_tag}
+CMAKE_ARGS ${gemini3d_args}
+BUILD_BYPRODUCTS ${gemini3d_byproducts}
+INACTIVITY_TIMEOUT 15
+UPDATE_DISCONNECTED true
+CONFIGURE_HANDLED_BY_BUILD true)
+
+file(MAKE_DIRECTORY ${GEMINI_INCLUDE_DIRS})
+# avoid generate race condition
+
+target_link_libraries(gemini3d::gemini3d INTERFACE ${gemini3d_byproducts})
+
+if(MUMPS_FOUND)
+  target_link_libraries(gemini3d::gemini3d INTERFACE MUMPS::MUMPS)
+endif()
+
+if(SCALAPACK_FOUND)
+  target_link_libraries(gemini3d::gemini3d INTERFACE SCALAPACK::SCALAPACK)
+endif()
+
+if(LAPACK_FOUND)
+  target_link_libraries(gemini3d::gemini3d INTERFACE LAPACK::LAPACK)
+endif()
+
+if(HDF5_FOUND)
+  target_link_libraries(gemini3d::gemini3d INTERFACE HDF5::HDF5)
+endif()
+
+if(HWLOC_FOUND)
+  # these are distinct (in addition to) our own hwloc_ifc interface.
+  target_link_libraries(gemini3d::gemini3d INTERFACE HWLOC::HWLOC)
+endif()
 
 target_include_directories(gemini3d::gemini3d INTERFACE ${GEMINI_INCLUDE_DIRS})
 
