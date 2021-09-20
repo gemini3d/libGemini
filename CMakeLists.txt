@@ -19,11 +19,17 @@ include(cmake/gemini3d.cmake)
 # this could be used as a starting point for C/C++ programs that use the GEMINI3D API
 
 add_executable(gemini_c.bin src/gemini_main.c)
+
 set_target_properties(gemini_c.bin PROPERTIES
 RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}
-LINKER_LANGUAGE Fortran
 )
-# LINKER_LANGUAGE needed for Intel compilers
+
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|^Intel")
+  set_target_properties(gemini_c.bin PROPERTIES
+  LINKER_LANGUAGE Fortran
+  )
+endif()
+
 target_link_libraries(gemini_c.bin PRIVATE gemini3d::gemini3d)
 
 target_link_libraries(gemini_c.bin PRIVATE MPI::MPI_C)
