@@ -11,6 +11,7 @@ include(CTest)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 include(cmake/libraries.cmake)
+include(cmake/compiler_flags.cmake)
 
 include(cmake/gemini3d.cmake)
 
