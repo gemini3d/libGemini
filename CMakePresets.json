@@ -1,0 +1,88 @@
+{
+  "version": 3,
+
+"configurePresets": [
+{
+  "name": "default",
+  "binaryDir": "${sourceDir}/build",
+  "installDir": "${sourceDir}/build",
+  "cacheVariables": {
+    "CMAKE_BUILD_TYPE": "Release"
+  }
+},
+{
+  "name": "multi", "inherits": "default",
+  "displayName": "Ninja Multi-Config",
+  "generator": "Ninja Multi-Config"
+},
+{
+  "name": "build", "inherits": "default",
+  "displayName": "build all libraries",
+  "description": "Build all external libraries without searching for existing libraries.",
+  "cacheVariables": {
+    "lapack_external": "on",
+    "scalapack_external": "on",
+    "mumps_external": "on",
+    "hdf5_external": "on"
+  }
+},
+{
+  "name": "intel", "inherits": "default",
+  "displayName": "Intel compiler",
+  "binaryDir": "${sourceDir}/build-intel",
+  "installDir": "${sourceDir}/build-intel",
+  "environment": {
+    "CC": "icx",
+    "FC": "ifort"
+  }
+}
+],
+"buildPresets": [
+  {
+    "name": "default",
+    "configurePreset": "default"
+  },
+  {
+    "name": "release",
+    "configurePreset": "multi",
+    "configuration": "Release"
+  },
+  {
+    "name": "debug",
+    "configurePreset": "multi",
+    "configuration": "Debug"
+  },
+  {
+    "name": "intel",
+    "configurePreset": "intel"
+  }
+],
+"testPresets": [
+{
+  "name": "default",
+  "configurePreset": "default",
+  "output": {
+    "outputOnFailure": true,
+    "verbosity": "default"
+  },
+  "execution": {
+    "noTestsAction": "error",
+    "stopOnFailure": false
+  }
+},
+{
+  "name": "release", "inherits": "default",
+  "configurePreset": "multi",
+  "configuration": "Release"
+},
+{
+  "name": "debug", "inherits": "default",
+  "configurePreset": "multi",
+  "configuration": "Debug"
+},
+{
+  "name": "intel", "inherits": "default",
+  "configurePreset": "intel"
+}
+]
+}

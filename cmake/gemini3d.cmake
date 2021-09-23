@@ -5,6 +5,11 @@ include(ExternalProject)
 # for user programs
 add_library(gemini3d::gemini3d INTERFACE IMPORTED)
 
+option(mumps_external "force build MUMPS")
+option(scalapack_external "force build SCALAPACK")
+option(lapack_external "force build LAPACK")
+option(hdf5_external "force build HDF5")
+
 if(NOT GEMINI_ROOT)
   if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(GEMINI_ROOT ${PROJECT_BINARY_DIR} CACHE PATH "default ROOT")
@@ -15,11 +20,19 @@ endif()
 
 find_package(MPI COMPONENTS C Fortran REQUIRED)
 find_package(HWLOC)
-find_package(HDF5 COMPONENTS Fortran)
-find_package(ZLIB)
-find_package(MUMPS)
-find_package(SCALAPACK)
-find_package(LAPACK)
+if(NOT hdf5_external)
+  find_package(HDF5 COMPONENTS Fortran)
+  find_package(ZLIB)
+endif()
+if(NOT mumps_external)
+  find_package(MUMPS)
+endif()
+if(NOT scalapack_external)
+  find_package(SCALAPACK)
+endif()
+if(NOT lapack_external)
+  find_package(LAPACK)
+endif()
 
 set(GEMINI_LIBRARIES
 ${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gemini3d${CMAKE_STATIC_LIBRARY_SUFFIX})
@@ -116,6 +129,10 @@ set(gemini3d_args
 -DBUILD_SHARED_LIBS:BOOL=false
 -DCMAKE_BUILD_TYPE=Release
 -DBUILD_TESTING:BOOL=false
+-Dmumps_external:BOOL=${mumps_external}
+-Dscalapack_external:BOOL=${scalapack_external}
+-Dlapack_external:BOOL=${lapack_external}
+-Dhdf5_external:BOOL=${hdf5_external}
 )
 
 ExternalProject_Add(GEMINI3D
