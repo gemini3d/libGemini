@@ -83,11 +83,7 @@ ${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}blas${CMAKE_STATIC_LIBRARY_SUFF
 )
 
 set(HDF5_LIBRARIES)
-if(WIN32)
-  set(hdf5_names hdf5_hl_fortran hdf5_hl_f90cstub hdf5_fortran hdf5_f90cstub hdf5_hl hdf5)
-else()
-  set(hdf5_names hdf5_hl_fortran hdf5_fortran hdf5_hl hdf5)
-endif()
+set(hdf5_names hdf5_hl_fortran hdf5_hl_f90cstub hdf5_fortran hdf5_f90cstub hdf5_hl hdf5)
 foreach(_name ${hdf5_names})
   list(APPEND HDF5_LIBRARIES ${GEMINI_ROOT}/lib/lib${_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
 endforeach()
