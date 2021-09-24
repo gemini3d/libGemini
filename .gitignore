@@ -1,4 +1,6 @@
 build*/
+test_data/
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles

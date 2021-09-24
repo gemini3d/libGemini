@@ -34,6 +34,10 @@ if(NOT lapack_external)
   find_package(LAPACK)
 endif()
 
+# artifacts from ExternalProject GEMINI3D
+
+set(gemini3d.compare ${GEMINI_ROOT}/bin/gemini3d.compare)
+
 set(GEMINI_LIBRARIES
 ${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gemini3d${CMAKE_STATIC_LIBRARY_SUFFIX})
 
