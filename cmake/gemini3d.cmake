@@ -103,7 +103,7 @@ ${MSIS_LIBRARIES}
 ${HWM_LIBRARIES}
 ${HWLOC_LIBRARIES}
 )
-
+# BUILD_BYPRODUCTS does not yet support generator expressions
 if(NOT MUMPS_FOUND)
   list(APPEND gemini3d_byproducts ${MUMPS_LIBRARIES})
 endif()
@@ -134,23 +134,12 @@ set(gemini3d_args
 -Dlapack_external:BOOL=${lapack_external}
 -Dhdf5_external:BOOL=${hdf5_external}
 -Dautobuild:BOOL=${autobuild}
+"$<$<BOOL:${LAPACK_ROOT}>:-DLAPACK_ROOT:PATH=${LAPACK_ROOT}>"
+"$<$<BOOL:${SCALAPACK_ROOT}>:-DSCALAPACK_ROOT:PATH=${SCALAPACK_ROOT}>"
+"$<$<BOOL:${MUMPS_ROOT}>:-DMUMPS_ROOT:PATH=${MUMPS_ROOT}>"
+"$<$<BOOL:${HDF5_ROOT}>:-DHDF5_ROOT:PATH=${HDF5_ROOT}>"
+"$<$<BOOL:${ZLIB_ROOT}>:-DZLIB_ROOT:PATH=${ZLIB_ROOT}>"
 )
-
-if(LAPACK_ROOT)
-  list(APPEND gemini3d_args -DLAPACK_ROOT:PATH=${LAPACK_ROOT})
-endif()
-
-if(SCALAPACK_ROOT)
-  list(APPEND gemini3d_args -DSCALAPACK_ROOT:PATH=${SCALAPACK_ROOT})
-endif()
-
-if(MUMPS_ROOT)
-  list(APPEND gemini3d_args -DMUMPS_ROOT:PATH=${MUMPS_ROOT})
-endif()
-
-if(HDF5_ROOT)
-  list(APPEND gemini3d_args -DHDF5_ROOT:PATH=${HDF5_ROOT})
-endif()
 
 ExternalProject_Add(G3D
 GIT_REPOSITORY ${gemini3d_git}
@@ -159,42 +148,25 @@ CMAKE_ARGS ${gemini3d_args}
 CMAKE_GENERATOR ${EXTPROJ_GENERATOR}
 BUILD_BYPRODUCTS ${gemini3d_byproducts}
 INACTIVITY_TIMEOUT 15
-CONFIGURE_HANDLED_BY_BUILD true)
+CONFIGURE_HANDLED_BY_BUILD true
+)
 
 file(MAKE_DIRECTORY ${GEMINI_INCLUDE_DIRS})
 # avoid generate race condition
 
-target_link_libraries(gemini3d::gemini3d INTERFACE ${gemini3d_byproducts})
-
-if(MUMPS_FOUND)
-  target_link_libraries(gemini3d::gemini3d INTERFACE MUMPS::MUMPS)
-endif()
-
-if(SCALAPACK_FOUND)
-  target_link_libraries(gemini3d::gemini3d INTERFACE SCALAPACK::SCALAPACK)
-endif()
-
-if(LAPACK_FOUND)
-  target_link_libraries(gemini3d::gemini3d INTERFACE LAPACK::LAPACK)
-endif()
-
-if(HDF5_FOUND)
-  target_link_libraries(gemini3d::gemini3d INTERFACE HDF5::HDF5)
-endif()
-
-if(ZLIB_FOUND)
-  target_link_libraries(gemini3d::gemini3d INTERFACE ZLIB::ZLIB)
-endif()
-
-if(HWLOC_FOUND)
-  # these are distinct (in addition to) our own hwloc_ifc interface.
-  target_link_libraries(gemini3d::gemini3d INTERFACE HWLOC::HWLOC)
-endif()
-
-target_link_libraries(gemini3d::gemini3d INTERFACE MPI::MPI_Fortran)
-
+target_link_libraries(gemini3d::gemini3d INTERFACE
+${gemini3d_byproducts}
+"$<$<BOOL:${MUMPS_FOUND}>:MUMPS::MUMPS>"
+"$<$<BOOL:${SCALAPACK_FOUND}>:SCALAPACK::SCALAPACK>"
+"$<$<BOOL:${LAPACK_FOUND}>:LAPACK::LAPACK>"
+"$<$<BOOL:${HDF5_FOUND}>:HDF5::HDF5>"
+"$<$<BOOL:${ZLIB_FOUND}>:ZLIB::ZLIB>"
+"$<$<BOOL:${HWLOC_FOUND}>:HWLOC::HWLOC>"
+MPI::MPI_Fortran
+${CMAKE_DL_LIBS}
+$<$<BOOL:${UNIX}>:m>
+)
 # libdl and libm are needed on some systems for HDF5
-target_link_libraries(gemini3d::gemini3d INTERFACE ${CMAKE_DL_LIBS} $<$<BOOL:${UNIX}>:m>)
 
 # for Fortran modules
 target_include_directories(gemini3d::gemini3d INTERFACE ${GEMINI_INCLUDE_DIRS})
