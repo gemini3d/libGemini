@@ -18,7 +18,7 @@ set_tests_properties(${name}:download PROPERTIES
 
 # TODO: construct command
 # set(test_cmd $<TARGET_FILE:gemini3d.run> ${out_dir} -exe $<TARGET_FILE:gemini_c.bin>)
-set(test_cmd ${MPIEXEC_EXECUTABLE} -n 2 $<TARGET_FILE:gemini_c.bin>)
+set(test_cmd ${MPIEXEC_EXECUTABLE} -n 2 $<TARGET_FILE:gemini_c.bin> ${out_dir})
 
 # TODO frontend C
 # list(APPEND test_cmd -mpiexec ${MPIEXEC_EXECUTABLE})
@@ -48,11 +48,6 @@ set_tests_properties(gemini:${name} PROPERTIES
   FIXTURES_SETUP ${name}:run_fxt
   PROCESSORS 2
   LABELS core)
-
-if(test_dll_path)
-  set_tests_properties(gemini:${name}:dryrun gemini:${name} PROPERTIES
-    ENVIRONMENT "PATH=${test_dll_path}")
-endif()
 
 compare_gemini_output(${name} ${out_dir} ${ref_dir})
 

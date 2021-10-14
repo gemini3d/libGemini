@@ -32,7 +32,10 @@ endif()
 
 # artifacts from ExternalProject GEM3D
 
-set(gemini3d.compare ${GEMINI_ROOT}/bin/gemini3d.compare)
+add_executable(gemini3d.compare IMPORTED)
+set_target_properties(gemini3d.compare PROPERTIES
+IMPORTED_LOCATION ${GEMINI_ROOT}/bin/gemini3d.compare
+)
 
 set(GEMINI_LIBRARIES
 ${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gemini3d${CMAKE_STATIC_LIBRARY_SUFFIX})
