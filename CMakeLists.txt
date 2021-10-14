@@ -21,6 +21,7 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
+include(cmake/options.cmake)
 include(cmake/libraries.cmake)
 include(cmake/compiler_flags.cmake)
 
