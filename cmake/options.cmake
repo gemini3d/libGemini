@@ -1,4 +1,5 @@
 option(dev "development mode")
+option(autobuild "autobuild missing libraries" off)
 
 
 if(dev)

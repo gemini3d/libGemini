@@ -11,11 +11,7 @@ option(lapack_external "force build LAPACK")
 option(hdf5_external "force build HDF5")
 
 if(NOT GEMINI_ROOT)
-  if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(GEMINI_ROOT ${PROJECT_BINARY_DIR} CACHE PATH "default ROOT")
-  else()
-    set(GEMINI_ROOT ${CMAKE_INSTALL_PREFIX})
-  endif()
+  set(GEMINI_ROOT ${CMAKE_INSTALL_PREFIX})
 endif()
 
 find_package(MPI COMPONENTS C Fortran REQUIRED)
@@ -34,7 +30,7 @@ if(NOT lapack_external)
   find_package(LAPACK)
 endif()
 
-# artifacts from ExternalProject GEMINI3D
+# artifacts from ExternalProject GEM3D
 
 set(gemini3d.compare ${GEMINI_ROOT}/bin/gemini3d.compare)
 
@@ -134,9 +130,26 @@ set(gemini3d_args
 -Dscalapack_external:BOOL=${scalapack_external}
 -Dlapack_external:BOOL=${lapack_external}
 -Dhdf5_external:BOOL=${hdf5_external}
+-Dautobuild:BOOL=${autobuild}
 )
 
-ExternalProject_Add(GEMINI3D
+if(LAPACK_ROOT)
+  list(APPEND gemini3d_args -DLAPACK_ROOT:PATH=${LAPACK_ROOT})
+endif()
+
+if(SCALAPACK_ROOT)
+  list(APPEND gemini3d_args -DSCALAPACK_ROOT:PATH=${SCALAPACK_ROOT})
+endif()
+
+if(MUMPS_ROOT)
+  list(APPEND gemini3d_args -DMUMPS_ROOT:PATH=${MUMPS_ROOT})
+endif()
+
+if(HDF5_ROOT)
+  list(APPEND gemini3d_args -DHDF5_ROOT:PATH=${HDF5_ROOT})
+endif()
+
+ExternalProject_Add(G3D
 GIT_REPOSITORY ${gemini3d_git}
 GIT_TAG ${gemini3d_tag}
 CMAKE_ARGS ${gemini3d_args}
@@ -183,4 +196,4 @@ target_link_libraries(gemini3d::gemini3d INTERFACE ${CMAKE_DL_LIBS} $<$<BOOL:${U
 # for Fortran modules
 target_include_directories(gemini3d::gemini3d INTERFACE ${GEMINI_INCLUDE_DIRS})
 
-add_dependencies(gemini3d::gemini3d GEMINI3D)
+add_dependencies(gemini3d::gemini3d G3D)
