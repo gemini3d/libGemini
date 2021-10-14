@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.20...3.21)
+cmake_minimum_required(VERSION 3.20...3.22)
+
+get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(NOT is_multi_config AND NOT (CMAKE_BUILD_TYPE OR DEFINED ENV{CMAKE_BUILD_TYPE}))
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Release default")
+endif()
 
 project(LibGemini
 LANGUAGES C CXX Fortran
@@ -7,6 +12,12 @@ LANGUAGES C CXX Fortran
 # this is a C/C++ project, we are using a Fortran library libgemini3d
 
 include(CTest)
+
+if(CMAKE_GENERATOR STREQUAL "Ninja Multi-Config")
+  set(EXTPROJ_GENERATOR "Ninja")
+else()
+  set(EXTPROJ_GENERATOR ${CMAKE_GENERATOR})
+endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 

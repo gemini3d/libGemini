@@ -140,9 +140,9 @@ ExternalProject_Add(GEMINI3D
 GIT_REPOSITORY ${gemini3d_git}
 GIT_TAG ${gemini3d_tag}
 CMAKE_ARGS ${gemini3d_args}
+CMAKE_GENERATOR ${EXTPROJ_GENERATOR}
 BUILD_BYPRODUCTS ${gemini3d_byproducts}
 INACTIVITY_TIMEOUT 15
-UPDATE_DISCONNECTED true
 CONFIGURE_HANDLED_BY_BUILD true)
 
 file(MAKE_DIRECTORY ${GEMINI_INCLUDE_DIRS})
@@ -178,11 +178,7 @@ endif()
 target_link_libraries(gemini3d::gemini3d INTERFACE MPI::MPI_Fortran)
 
 # libdl and libm are needed on some systems for HDF5
-target_link_libraries(gemini3d::gemini3d INTERFACE ${CMAKE_DL_LIBS})
-
-if(UNIX)
-  target_link_libraries(gemini3d::gemini3d INTERFACE m)
-endif(UNIX)
+target_link_libraries(gemini3d::gemini3d INTERFACE ${CMAKE_DL_LIBS} $<$<BOOL:${UNIX}>:m>)
 
 # for Fortran modules
 target_include_directories(gemini3d::gemini3d INTERFACE ${GEMINI_INCLUDE_DIRS})
