@@ -91,35 +91,22 @@ ${h5fortran_LIBRARIES}
 ${GLOW_LIBRARIES}
 ${MSIS_LIBRARIES}
 ${HWM_LIBRARIES}
-${HWLOC_LIBRARIES}
-)
+# these are available if Gemini3D auto-built them.
 # BUILD_BYPRODUCTS does not yet support generator expressions
-if(NOT MUMPS_FOUND)
-  list(APPEND gemini3d_byproducts ${MUMPS_LIBRARIES})
-endif()
-
-if(NOT SCALAPACK_FOUND)
-  list(APPEND gemini3d_byproducts ${SCALAPACK_LIBRARIES})
-endif()
-
-if(NOT LAPACK_FOUND)
-  list(APPEND gemini3d_byproducts ${LAPACK_LIBRARIES})
-endif()
-
-if(NOT HDF5_FOUND)
-  list(APPEND gemini3d_byproducts ${HDF5_LIBRARIES})
-endif()
-
-if(NOT ZLIB_FOUND)
-  list(APPEND gemini3d_byproducts ${ZLIB_LIBRARIES})
-endif()
+${HWLOC_LIBRARIES}
+${MUMPS_LIBRARIES}
+${SCALAPACK_LIBRARIES}
+${LAPACK_LIBRARIES}
+${HDF5_LIBRARIES}
+${ZLIB_LIBRARIES}
+)
 
 set(gemini3d_args
 -DCMAKE_INSTALL_PREFIX:PATH=${GEMINI_ROOT}
 -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
--DCMAKE_BUILD_TYPE=Release
 -DBUILD_TESTING:BOOL=false
 -Dautobuild:BOOL=${autobuild}
+-Drealbits=64
 "$<$<BOOL:${LAPACK_ROOT}>:-DLAPACK_ROOT:PATH=${LAPACK_ROOT}>"
 "$<$<BOOL:${SCALAPACK_ROOT}>:-DSCALAPACK_ROOT:PATH=${SCALAPACK_ROOT}>"
 "$<$<BOOL:${MUMPS_ROOT}>:-DMUMPS_ROOT:PATH=${MUMPS_ROOT}>"
@@ -127,16 +114,18 @@ set(gemini3d_args
 "$<$<BOOL:${ZLIB_ROOT}>:-DZLIB_ROOT:PATH=${ZLIB_ROOT}>"
 )
 
-ExternalProject_Add(G3D
+ExternalProject_Add(GEMINI3D_RELEASE
 GIT_REPOSITORY ${gemini3d_git}
 GIT_TAG ${gemini3d_tag}
-CMAKE_ARGS ${gemini3d_args}
+CMAKE_ARGS ${gemini3d_args} -DCMAKE_BUILD_TYPE=Release
 CMAKE_GENERATOR ${EXTPROJ_GENERATOR}
 BUILD_BYPRODUCTS ${gemini3d_byproducts}
 INACTIVITY_TIMEOUT 15
 CONFIGURE_HANDLED_BY_BUILD true
 )
 
+# for Fortran modules
+target_include_directories(gemini3d::gemini3d INTERFACE ${GEMINI_INCLUDE_DIRS})
 file(MAKE_DIRECTORY ${GEMINI_INCLUDE_DIRS})
 # avoid generate race condition
 
@@ -154,7 +143,4 @@ $<$<BOOL:${UNIX}>:m>
 )
 # libdl and libm are needed on some systems for HDF5
 
-# for Fortran modules
-target_include_directories(gemini3d::gemini3d INTERFACE ${GEMINI_INCLUDE_DIRS})
-
-add_dependencies(gemini3d::gemini3d G3D)
+add_dependencies(gemini3d::gemini3d GEMINI3D_RELEASE)
