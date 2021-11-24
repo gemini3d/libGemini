@@ -5,30 +5,19 @@ include(ExternalProject)
 # for user programs
 add_library(gemini3d::gemini3d INTERFACE IMPORTED)
 
-option(mumps_external "force build MUMPS")
-option(scalapack_external "force build SCALAPACK")
-option(lapack_external "force build LAPACK")
-option(hdf5_external "force build HDF5")
-
 if(NOT GEMINI_ROOT)
   set(GEMINI_ROOT ${CMAKE_INSTALL_PREFIX})
 endif()
 
 find_package(MPI COMPONENTS C Fortran REQUIRED)
 find_package(HWLOC)
-if(NOT hdf5_external)
-  find_package(HDF5 COMPONENTS Fortran)
-  find_package(ZLIB)
-endif()
-if(NOT mumps_external)
-  find_package(MUMPS)
-endif()
-if(NOT scalapack_external)
-  find_package(SCALAPACK)
-endif()
-if(NOT lapack_external)
-  find_package(LAPACK)
-endif()
+
+find_package(HDF5 COMPONENTS Fortran)
+find_package(ZLIB)
+
+find_package(MUMPS)
+find_package(SCALAPACK)
+find_package(LAPACK)
 
 # artifacts from ExternalProject GEM3D
 
@@ -38,60 +27,61 @@ IMPORTED_LOCATION ${GEMINI_ROOT}/bin/gemini3d.compare
 )
 
 set(GEMINI_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gemini3d${CMAKE_STATIC_LIBRARY_SUFFIX})
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}gemini3d${CMAKE_${lib_type}_LIBRARY_SUFFIX})
 
 set(GEMINI_INCLUDE_DIRS ${GEMINI_ROOT}/include)
 
 # libraries needed by Gemini3D
 set(h5fortran_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}h5fortran${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}h5fortran${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
 set(nc4fortran_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}nc4fortran${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}nc4fortran${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
 set(MSIS_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}msis00mod${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}msis00mod${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
 set(GLOW_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glow${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}glow${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
 set(HWM_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}hwm_ifc${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}hwm_ifc${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
 set(HWLOC_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}hwloc_ifc${CMAKE_STATIC_LIBRARY_SUFFIX}
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}hwloc_c${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}hwloc_ifc${CMAKE_${lib_type}_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}hwloc_c${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
 # these are available if Gemini3D auto-built them.
 set(MUMPS_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}dmumps${CMAKE_STATIC_LIBRARY_SUFFIX}
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mumps_common${CMAKE_STATIC_LIBRARY_SUFFIX}
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}pord${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}dmumps${CMAKE_${lib_type}_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}mumps_common${CMAKE_${lib_type}_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}pord${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
 set(SCALAPACK_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}scalapack${CMAKE_STATIC_LIBRARY_SUFFIX}
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}blacs${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}scalapack${CMAKE_${lib_type}_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}blacs${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
 set(LAPACK_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}lapack${CMAKE_STATIC_LIBRARY_SUFFIX}
-${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}blas${CMAKE_STATIC_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}lapack${CMAKE_${lib_type}_LIBRARY_SUFFIX}
+${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}blas${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
 set(HDF5_LIBRARIES)
+# lib prefix hard-coded because that's what HDF5 library itself does
 set(hdf5_names hdf5_hl_fortran hdf5_hl_f90cstub hdf5_fortran hdf5_f90cstub hdf5_hl hdf5)
 foreach(_name ${hdf5_names})
-  list(APPEND HDF5_LIBRARIES ${GEMINI_ROOT}/lib/lib${_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
+  list(APPEND HDF5_LIBRARIES ${GEMINI_ROOT}/lib/lib${_name}${CMAKE_${lib_type}_LIBRARY_SUFFIX})
 endforeach()
 
-set(ZLIB_LIBRARIES ${GEMINI_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}z${CMAKE_STATIC_LIBRARY_SUFFIX})
+set(ZLIB_LIBRARIES ${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}z${CMAKE_${lib_type}_LIBRARY_SUFFIX})
 
 # ExternalProject defined
 set(gemini3d_byproducts
@@ -129,10 +119,6 @@ set(gemini3d_args
 -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
 -DCMAKE_BUILD_TYPE=Release
 -DBUILD_TESTING:BOOL=false
--Dmumps_external:BOOL=${mumps_external}
--Dscalapack_external:BOOL=${scalapack_external}
--Dlapack_external:BOOL=${lapack_external}
--Dhdf5_external:BOOL=${hdf5_external}
 -Dautobuild:BOOL=${autobuild}
 "$<$<BOOL:${LAPACK_ROOT}>:-DLAPACK_ROOT:PATH=${LAPACK_ROOT}>"
 "$<$<BOOL:${SCALAPACK_ROOT}>:-DSCALAPACK_ROOT:PATH=${SCALAPACK_ROOT}>"

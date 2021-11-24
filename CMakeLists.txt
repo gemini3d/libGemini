@@ -13,12 +13,6 @@ LANGUAGES C CXX Fortran
 
 include(CTest)
 
-if(CMAKE_GENERATOR STREQUAL "Ninja Multi-Config")
-  set(EXTPROJ_GENERATOR "Ninja")
-else()
-  set(EXTPROJ_GENERATOR ${CMAKE_GENERATOR})
-endif()
-
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 include(cmake/options.cmake)
@@ -35,10 +29,6 @@ endif()
 # this could be used as a starting point for C/C++ programs that use the GEMINI3D API
 
 add_executable(gemini_c.bin src/gemini_main.c)
-
-set_target_properties(gemini_c.bin PROPERTIES
-RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}
-)
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|^Intel")
   set_target_properties(gemini_c.bin PROPERTIES

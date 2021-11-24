@@ -1,5 +1,5 @@
 option(dev "development mode")
-option(autobuild "autobuild missing libraries" off)
+option(autobuild "autobuild missing libraries")
 
 
 if(dev)
@@ -7,6 +7,18 @@ else()
   set_directory_properties(PROPERTIES EP_UPDATE_DISCONNECTED true)
 endif()
 
+# --- naming shared/static
+set(lib_type STATIC)
+if(BUILD_SHARED_LIBS)
+  set(lib_type SHARED)
+endif()
+
+# --- External project generator
+if(CMAKE_GENERATOR STREQUAL "Ninja Multi-Config")
+  set(EXTPROJ_GENERATOR "Ninja")
+else()
+  set(EXTPROJ_GENERATOR ${CMAKE_GENERATOR})
+endif()
 
 # --- auto-ignore build directory
 if(NOT EXISTS ${PROJECT_BINARY_DIR}/.gitignore)
