@@ -1,5 +1,4 @@
 option(dev "development mode")
-option(autobuild "autobuild missing libraries")
 
 
 if(dev)
