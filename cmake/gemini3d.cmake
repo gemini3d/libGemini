@@ -39,10 +39,6 @@ set(nc4fortran_LIBRARIES
 ${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}nc4fortran${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
 
-set(MSIS_LIBRARIES
-${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}msis00mod${CMAKE_${lib_type}_LIBRARY_SUFFIX}
-)
-
 set(GLOW_LIBRARIES
 ${GEMINI_ROOT}/lib/${CMAKE_${lib_type}_LIBRARY_PREFIX}glow${CMAKE_${lib_type}_LIBRARY_SUFFIX}
 )
@@ -62,11 +58,12 @@ ${HWM_LIBRARIES}
 )
 
 set(gemini3d_args
--DCMAKE_INSTALL_PREFIX:PATH=${GEMINI_ROOT}
+--install-prefix=${GEMINI_ROOT}
 -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
 -DBUILD_TESTING:BOOL=false
 -Dautobuild:BOOL=off
 -Drealbits=64
+-Dglow:BOOL=on
 )
 
 ExternalProject_Add(GEMINI3D_RELEASE
