@@ -1,4 +1,12 @@
 {
+  "gemini3d" :
+  {
+    "version" : "v1.1.2-153-gaac30d70 1.1.2"
+  },
+  "library" :
+  {
+    "mpi" : "/usr/lib64/openmpi/lib/libmpi.so"
+  },
   "system" :
   {
     "cmake_version" : "3.22.0",

@@ -1,4 +1,5 @@
 option(dev "development mode")
+option(glow "NCAR GLOW model" true)
 option(autobuild "autobuild missing libraries")
 
 
