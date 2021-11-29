@@ -52,10 +52,12 @@ set(gemini3d_byproducts
 ${GEMINI_LIBRARIES}
 ${nc4fortran_LIBRARIES}
 ${h5fortran_LIBRARIES}
-${GLOW_LIBRARIES}
 ${MSIS_LIBRARIES}
 ${HWM_LIBRARIES}
 )
+if(glow)
+  list(APPEND gemini3d_byproducts ${GLOW_LIBRARIES})
+endif()
 
 set(gemini3d_args
 --install-prefix=${GEMINI_ROOT}
@@ -63,7 +65,7 @@ set(gemini3d_args
 -DBUILD_TESTING:BOOL=false
 -Dautobuild:BOOL=off
 -Drealbits=64
--Dglow:BOOL=on
+-Dglow:BOOL=${glow}
 )
 
 ExternalProject_Add(GEMINI3D_RELEASE

@@ -8,7 +8,8 @@ TIMEOUT 60
 FIXTURES_REQUIRED ${name}:run_fxt
 RESOURCE_LOCK $<$<BOOL:${WIN32}>:cpu_mpi>
 REQUIRED_FILES "${outdir}/inputs/config.nml;${refdir}/inputs/config.nml"
-LABELS compare)
+LABELS compare
+)
 
 # resource_lock compare for Windows, which can take 100x longer when run
 # at same time with non-dependent sim runs.
