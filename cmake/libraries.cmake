@@ -1,4 +1,4 @@
-set(_lib_names forestclaw gemini3d)
+set(_lib_names forestclaw gemini3d iniparser)
 
 file(READ ${CMAKE_CURRENT_LIST_DIR}/libraries.json _libj)
 

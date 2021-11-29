@@ -24,6 +24,9 @@ include(cmake/gemini3d.cmake)
 if(NOT WIN32)
 include(cmake/forestclaw.cmake)
 endif()
+
+include(cmake/iniparser.cmake)
+
 # --- Gemini_c.bin
 # This is an example of a C/C++ Gemini3D main program
 # this could be used as a starting point for C/C++ programs that use the GEMINI3D API
@@ -36,9 +39,10 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|^Intel")
   )
 endif()
 
-target_link_libraries(gemini_c.bin PRIVATE gemini3d::gemini3d)
-
-target_link_libraries(gemini_c.bin PRIVATE MPI::MPI_C)
+target_link_libraries(gemini_c.bin PRIVATE gemini3d::gemini3d
+MPI::MPI_C
+iniparser
+)
 
 # --- setup tests
 

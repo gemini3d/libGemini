@@ -7,6 +7,7 @@
 #include <mpi.h>
 
 #include "gemini3d.h"
+#include "iniparser.h"
 
 int main(int argc, char **argv) {
 
