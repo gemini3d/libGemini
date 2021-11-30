@@ -31,7 +31,8 @@ include(cmake/iniparser.cmake)
 # This is an example of a C/C++ Gemini3D main program
 # this could be used as a starting point for C/C++ programs that use the GEMINI3D API
 
-add_executable(gemini_c.bin src/gemini_main.c)
+add_executable(gemini_c.bin)
+target_compile_features(gemini_c.bin PRIVATE cxx_std_17)
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|^Intel")
   set_target_properties(gemini_c.bin PROPERTIES
@@ -43,6 +44,8 @@ target_link_libraries(gemini_c.bin PRIVATE gemini3d::gemini3d
 MPI::MPI_C
 iniparser
 )
+
+add_subdirectory(src)
 
 # --- setup tests
 
