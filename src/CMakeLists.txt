@@ -6,4 +6,4 @@ target_link_libraries(test_pathlib PRIVATE pathlib_cpp)
 add_test(NAME pathlibC++ COMMAND test_pathlib)
 
 target_sources(gemini_c.bin PRIVATE gemini_main.cpp)
-#target_link_libraries(gemini_c.bin PRIVATE pathlib_cpp)
+target_link_libraries(gemini_c.bin PRIVATE pathlib_cpp)

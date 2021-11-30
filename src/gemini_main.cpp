@@ -10,7 +10,7 @@
 
 #include "gemini3d.h"
 #include "iniparser.h"
-//#include "pathlib.hpp"
+#include "pathlib.hpp"
 
 namespace fs = std::filesystem;
 
@@ -27,32 +27,30 @@ if (argc < 2) {
   return EXIT_FAILURE;
 }
 
-std::string out_dir = argv[1];
 // simulation directory
-//expanduser(out_dir);
+std::string out_dir = expanduser(argv[1]);
 if(out_dir.size() > LMAX) {
   MPI_Finalize();
   std::cerr << "Gemini3D simulation output directory: path length > " << LMAX << std::endl;
   return EXIT_FAILURE;
 }
-std::strncpy(s.out_dir, out_dir.c_str(), LMAX);
 
 
-if(! fs::is_directory(s.out_dir)) {
-  std::cerr << "Gemini3D simulation output directory does not exist: " << s.out_dir << std::endl;
+if(! fs::is_directory(out_dir)) {
+  std::cerr << "Gemini3D simulation output directory does not exist: " << out_dir << std::endl;
   return EXIT_FAILURE;
 }
 
 // Read gemini_config.ini
-char ini_file[LMAX];
-sprintf(ini_file, "%s/inputs/gemini_config.ini", argv[1]);
+std::string ini_file = out_dir;
+ini_file.append("/inputs/gemini_config.ini");
 
 dictionary  *ini;
 int b,i ;
 double d;
 const char *txt;
 
-ini = iniparser_load(ini_file);
+ini = iniparser_load(ini_file.c_str());
 if (ini==NULL) {
     std::cerr << "gemini3d_ini: cannot parse file: " << ini_file << std::endl;
     return EXIT_FAILURE;
@@ -63,8 +61,7 @@ b = iniparser_getboolean(ini, "pizza:ham", -1);
 iniparser_freedict(ini);  // close the file
 
 // Prepare Gemini3D struct
-strcpy(s.out_dir, argv[1]);
-
+std::strncpy(s.out_dir, out_dir.c_str(), LMAX);
 s.fortran_cli = false;
 s.debug = false;
 s.dryrun = false;
