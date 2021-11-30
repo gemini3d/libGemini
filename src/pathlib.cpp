@@ -4,37 +4,25 @@
 // Clang >= 9  or  g++ >= 8
 // clang++ -std=c++17
 
-#include <iostream>
-#include <filesystem>
 #include <string>
-#include <cstring>
 
-namespace fs = std::filesystem;
-
-void expanduser(char *pathstr){
+std::string expanduser(std::string path){
 // does not handle ~username/foo
 
-if(pathstr[0] != '~')
-  return;
+if(path.front() != '~') return path;
 
-std::string s;
+std::string s, expanded = path;
 #ifdef _WIN32
 s = std::getenv("USERPROFILE");
 #else
 s = std::getenv("HOME");
 #endif
 
-std::string r = pathstr;
-r.erase(r.begin());
-
-if (!s.empty()){
-  s += r;
-  if (sizeof(pathstr) < s.size() + 1) {
-    std::cerr << "Error: expanduser: path too long " << sizeof(pathstr) << " < " << s.size() + 1 << std::endl;
-    exit(EXIT_FAILURE);
-  }
-
-  strncpy(pathstr, s.c_str(), s.size() + 1);
+if (!s.empty()) {
+  expanded.erase(expanded.begin());
+  expanded.insert(0, s);
 }
+
+return expanded;
 
 }

@@ -1,1 +1,1 @@
-void expanduser(char *);
+std::string expanduser(std::string);

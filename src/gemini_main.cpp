@@ -27,17 +27,16 @@ if (argc < 2) {
   return EXIT_FAILURE;
 }
 
-int L = strlen(argv[1]);
-if(L > LMAX) {
+std::string out_dir = argv[1];
+// simulation directory
+//expanduser(out_dir);
+if(out_dir.size() > LMAX) {
   MPI_Finalize();
   std::cerr << "Gemini3D simulation output directory: path length > " << LMAX << std::endl;
   return EXIT_FAILURE;
 }
-L++; // for null terminator
+std::strncpy(s.out_dir, out_dir.c_str(), LMAX);
 
-// simulation directory
-strcpy(s.out_dir, argv[1]);
-//expanduser(s.out_dir);
 
 if(! fs::is_directory(s.out_dir)) {
   std::cerr << "Gemini3D simulation output directory does not exist: " << s.out_dir << std::endl;

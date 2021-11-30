@@ -1,18 +1,17 @@
-#include <iostream>
-#include <cstring>
+#include <string>
+#include <cassert>
 
 #include "pathlib.hpp"
 
 
 int main() {
 
-  char p1[100];
+std::string p1, p2;
 
-  strncpy(p1, "~", 1);
+p1 = "~/nothing";
+p2 = expanduser(p1);
 
-  expanduser(p1);
+assert(p2.size() > p1.size() + 2);
 
-  std::cout << p1 << std::endl;
-
-  return EXIT_SUCCESS;
+return EXIT_SUCCESS;
 }
