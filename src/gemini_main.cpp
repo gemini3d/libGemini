@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <filesystem>
+#include <vector>
+#include <sstream>
 
 #include <cstdlib>
 #include <cstring>
@@ -22,7 +24,6 @@ int ierr = MPI_Init(&argc, &argv);
 
 // CLI
 if (argc < 2) {
-  MPI_Finalize();
   std::cerr << "Gemini3D: please give simulation output directory e.g. ~/data/my_sim" << std::endl;
   return EXIT_FAILURE;
 }
@@ -30,7 +31,6 @@ if (argc < 2) {
 // simulation directory
 std::string out_dir = expanduser(argv[1]);
 if(out_dir.size() > LMAX) {
-  MPI_Finalize();
   std::cerr << "Gemini3D simulation output directory: path length > " << LMAX << std::endl;
   return EXIT_FAILURE;
 }
@@ -56,7 +56,22 @@ if (ini==NULL) {
     return EXIT_FAILURE;
 }
 
-b = iniparser_getboolean(ini, "pizza:ham", -1);
+std::string ini_str, t_str;
+std::vector<int> ymd;
+
+ini_str = iniparser_getstring(ini, "base:ymd", "");
+if(ini_str.empty()) {
+  std::cerr << "gemini3d_ini: base:ymd not found in " << ini_file << std::endl;
+  return EXIT_FAILURE;
+}
+std::stringstream sini(ini_str);
+
+while(std::getline(sini, t_str, ',')) ymd.push_back(stoi(t_str));
+if(ymd.size() != 3) {
+  std::cerr << "gemini3d_ini: base:ymd must have 3 elements: " << ini_str << std::endl;
+  return EXIT_FAILURE;
+}
+
 
 iniparser_freedict(ini);  // close the file
 
